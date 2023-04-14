@@ -93,6 +93,23 @@ void SimpleEQAudioProcessor::changeProgramName (int index, const juce::String& n
 //==============================================================================
 void SimpleEQAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    // Called before audio starts playing
+    // To initialize any resources like buffers or filters during audio processing
+    // We gotta prepare our filters before we play them
+
+    // Create a process spec object, which passes the processing parameters
+    // like samples rate and channels to the filter, thus preparing the filter for processing
+    juce::dsp::ProcessSpec spec; 
+
+    spec.maximumBlockSize = samplesPerBlock;
+
+    spec.numChannels = 1;
+
+    spec.sampleRate = sampleRate;
+
+    leftChain.prepare(spec);
+    rightChain.prepare(spec);
+
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
@@ -144,18 +161,22 @@ void SimpleEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    // Here, we want to extract the left and right channels from the buffer, to apply to left and right chain
+    // Create an audio block that wraps the buffer
+    // AudioBlock gets a block of audio samples in each channel from buffer
+    // Each block has the number of samples of the device's buffer size (512, 1024, etc)
 
-        // ..do something to the data...
-    }
+    juce::dsp::AudioBlock<float> block(buffer);
+
+    // Here, we separate the block's channels into left and right
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
 }
 
 //==============================================================================
@@ -187,8 +208,15 @@ void SimpleEQAudioProcessor::setStateInformation (const void* data, int sizeInBy
 juce::AudioProcessorValueTreeState::ParameterLayout
     SimpleEQAudioProcessor::createParameterLayout()
 {
+    // Create layout object that represents components in layout
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
+    // Parameter of ranged values (floats)
+    // 
+    // We normalize the range to map values on scale of 0 to 1
+    // This helps with comparing values of different scales,
+    // translate values to GUI controls that range from 0 to 1,
+    // or changing automation parameters that typically go from 0 to 1.
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "LowCut Freq", 
         "LowCut Freq", 
@@ -219,6 +247,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout
         juce::NormalisableRange<float>(0.f, 10.f, 0.05f, 1.f), 1.f
     ));
 
+    // Create array of low/high cut slopes from 12 to 48
     juce::StringArray stringArray;
     for (int i = 0; i < 4; ++i) {
         juce::String str;
@@ -227,6 +256,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout
         stringArray.add(str);
     }
 
+    // Audio parameter choice lists parameters as a drop-down menu of choices
+    // Add array of possible cut values as choice
     layout.add(std::make_unique<juce::AudioParameterChoice>(
         "LowCut Slope",
         "LowCut Slope",
