@@ -61,12 +61,13 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="6" x="0.32125" y="0.3810483870967742" useARA="0">
+  <FILTER uid="6" x="0.32125" y="0.3810483870967742" useARA="0" uiLastX_Normal="450"
+          uiLastY_Normal="134" uiopen_Normal="0">
     <PLUGIN name="AUv3 Synth" format="Internal" category="Synth" manufacturer="JUCE"
             version="1.0.0" file="AUv3 Synth" uniqueId="e86c6fed" isInstrument="1"
             fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="2"
             isShell="0" hasARAExtension="0" uid="e86c6fed"/>
-    <STATE>8..........7C</STATE>
+    <STATE>8............</STATE>
     <LAYOUT>
       <INPUTS/>
       <OUTPUTS>
@@ -74,5 +75,39 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <CONNECTION srcFilter="2" srcChannel="4096" dstFilter="6" dstChannel="4096"/>
+  <FILTER uid="7" x="0.46375" y="0.5020161290322581" useARA="0" uiLastX_Normal="174"
+          uiLastY_Normal="210" uiopen_Normal="0">
+    <PLUGIN name="SimpleEQ" format="VST3" category="Fx" manufacturer="yourcompany"
+            version="1.0.0" file="C:\Program Files\Common Files\VST3\SimpleEQ.vst3"
+            uniqueId="f9a8e12c" isInstrument="0" fileTime="187823ab415" infoUpdateTime="18782cd4efd"
+            numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
+            uid="e956c695"/>
+    <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <FILTER uid="8" x="0.57375" y="0.3474747474747475" useARA="0">
+    <PLUGIN name="Sine Wave Synth" format="Internal" category="Synth" manufacturer="JUCE"
+            version="1.0.0" file="Sine Wave Synth" uniqueId="16fd76a8" isInstrument="1"
+            fileTime="0" infoUpdateTime="0" numInputs="0" numOutputs="2"
+            isShell="0" hasARAExtension="0" uid="16fd76a8"/>
+    <STATE>0.</STATE>
+    <LAYOUT>
+      <INPUTS/>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
+  <CONNECTION srcFilter="2" srcChannel="4096" dstFilter="8" dstChannel="4096"/>
+  <CONNECTION srcFilter="7" srcChannel="0" dstFilter="3" dstChannel="0"/>
+  <CONNECTION srcFilter="7" srcChannel="1" dstFilter="3" dstChannel="1"/>
+  <CONNECTION srcFilter="8" srcChannel="0" dstFilter="7" dstChannel="0"/>
+  <CONNECTION srcFilter="8" srcChannel="1" dstFilter="7" dstChannel="1"/>
 </FILTERGRAPH>
