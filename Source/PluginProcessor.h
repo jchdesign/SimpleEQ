@@ -29,6 +29,26 @@ struct ChainSettings {
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts);
 
+// Filter that processes floats
+using Filter = juce::dsp::IIR::Filter<float>;
+
+// Since each Filter in IIR has a -12 db response, we need 4 filters to process -48 db
+// In dsp, we define a chain and pass in a processing context that runs through each element of chain automatically
+// Putting 4 filters in chain allows us to process all 4 automatically
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+
+// This represents the actual chain of processes, where audio from one channel can pass through a
+// low cut filter, a peak filter, and a high cut filter
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+
+// Represents each link's position in processor chain
+enum ChainPositions
+{
+    LowCut,
+    Peak,
+    HighCut
+};
+
 //==============================================================================
 /**
 */
@@ -83,28 +103,8 @@ public:
         "Parameters", createParameterLayout()};
 
 private:
-    // Filter that processes floats
-    using Filter = juce::dsp::IIR::Filter<float>;
-    
-    // Since each Filter in IIR has a -12 db response, we need 4 filters to process -48 db
-    // In dsp, we define a chain and pass in a processing context that runs through each element of chain automatically
-    // Putting 4 filters in chain allows us to process all 4 automatically
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-    
-    // This represents the actual chain of processes, where audio from one channel can pass through a
-    // low cut filter, a peak filter, and a high cut filter
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
-
     // 2 chains for stereo processing
     MonoChain leftChain, rightChain;
-
-    // Represents each link's position in processor chain
-    enum ChainPositions
-    {
-        LowCut,
-        Peak,
-        HighCut
-    };
 
     void updatePeakFilter(const ChainSettings& chainSettings);
     using Coefficients = Filter::CoefficientsPtr;

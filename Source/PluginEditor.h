@@ -59,6 +59,8 @@ private:
         lowCutSlopeSliderAttachment,
         highCutSlopeSliderAttachment;
 
+    MonoChain monoChain;
+
     // Function that gives all sliders in vector, so we can iterate between them
     std::vector<juce::Component*> getComps();
 
