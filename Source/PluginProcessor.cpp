@@ -331,7 +331,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         "Peak Quality",
         "Peak Quality",
-        juce::NormalisableRange<float>(0.f, 10.f, 0.05f, 1.f), 1.f
+        juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f), 1.f
     ));
 
     // Create array of low/high cut slopes from 12 to 48
